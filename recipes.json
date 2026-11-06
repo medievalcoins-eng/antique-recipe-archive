@@ -1,0 +1,112 @@
+[
+  {
+    "id": "honey-cake-1861",
+    "title": "Victorian Honey Cake",
+    "year": 1861,
+    "country": "England",
+    "category": "Cakes & Desserts",
+    "book": "Mrs. Beeton's Book of Household Management",
+    "author": "Isabella Beeton",
+    "reference": "Recipe 1758 — verification pending",
+    "source": "https://www.victorianlondon.org/publications7/beeton-35.htm",
+    "description": "A honey-sweetened Victorian cake with sour cream.",
+    "ingredients": [
+      "Sugar — ½ breakfast-cupful",
+      "Sour cream — 1 breakfast-cupful",
+      "Flour — 2 breakfast-cupfuls",
+      "Bicarbonate of soda — ½ teaspoon",
+      "Honey — to taste"
+    ],
+    "method": [
+      "Combine sugar and sour cream.",
+      "Work in flour and honey.",
+      "Add bicarbonate of soda and beat.",
+      "Bake according to the historical directions."
+    ],
+    "note": "Working summary only; original wording and quantities require verification. Not kitchen-tested."
+  },
+  {
+    "id": "recipe-2",
+    "title": "Caraway Seed Cake",
+    "year": 1861,
+    "country": "England",
+    "category": "Cakes & Desserts",
+    "book": "Mrs. Beeton's Book of Household Management",
+    "author": "Isabella Beeton",
+    "source": "https://www.gutenberg.org/ebooks/10136",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  },
+  {
+    "id": "recipe-3",
+    "title": "Pavini Cake",
+    "year": 1861,
+    "country": "England",
+    "category": "Cakes & Desserts",
+    "book": "Mrs. Beeton's Book of Household Management",
+    "author": "Isabella Beeton",
+    "source": "https://www.gutenberg.org/ebooks/10136",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  },
+  {
+    "id": "recipe-4",
+    "title": "Victorian Tea Cakes",
+    "year": 1861,
+    "country": "England",
+    "category": "Breads",
+    "book": "Mrs. Beeton's Book of Household Management",
+    "author": "Isabella Beeton",
+    "source": "https://www.gutenberg.org/ebooks/10136",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  },
+  {
+    "id": "recipe-5",
+    "title": "Boston Baked Beans",
+    "year": 1910,
+    "country": "United States",
+    "category": "Savory Dishes",
+    "book": "The Boston Cooking-School Cook Book",
+    "author": "Fannie Merritt Farmer",
+    "source": "https://www.gutenberg.org/files/65061/65061-h/65061-h.htm",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  },
+  {
+    "id": "recipe-6",
+    "title": "Pop-overs",
+    "year": 1910,
+    "country": "United States",
+    "category": "Breads",
+    "book": "The Boston Cooking-School Cook Book",
+    "author": "Fannie Merritt Farmer",
+    "source": "https://www.gutenberg.org/files/65061/65061-h/65061-h.htm",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  },
+  {
+    "id": "recipe-7",
+    "title": "Spider Corn Cake",
+    "year": 1910,
+    "country": "United States",
+    "category": "Breads",
+    "book": "The Boston Cooking-School Cook Book",
+    "author": "Fannie Merritt Farmer",
+    "source": "https://www.gutenberg.org/files/65061/65061-h/65061-h.htm",
+    "description": "Historical cookbook entry identified for further transcription and verification.",
+    "ingredients": [],
+    "method": [],
+    "note": "Original recipe transcription and verification pending."
+  }
+]
