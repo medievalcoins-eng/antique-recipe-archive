@@ -1,9 +1,9 @@
 [
   {
     "id": "honey-cake-1861",
-    "title": "Victorian Honey Cake",
+    "title": "Honey Cake (1855)",
     "year": 1855,
-    "country": "England",
+    "country": "United States",
     "category": "Cakes & Desserts",
     "book": "The National Cook Book",
     "author": "A Lady of Philadelphia",
@@ -36,8 +36,8 @@
   {
     "id": "recipe-2",
     "title": "Caraway Seed Cake",
-    "year": 1920,
-    "country": "England",
+    "year": "c. 1920",
+    "country": "United States",
     "category": "Cakes & Desserts",
     "book": "Ryzon Baking Book",
     "author": "Ryzon Baking Powder Company",
