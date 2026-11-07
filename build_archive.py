@@ -15,7 +15,7 @@ chapter=""
 for heading in soup.find_all(re.compile("^h[2-5]$")):
     title=heading.get_text(" ",strip=True)
     if heading.name=="h2":
-        chapter=re.sub(r"^CHAPTER\\s+[IVXLCDM]+\\s*","",title,flags=re.I)
+        chapter=re.sub(r"^CHAPTER\s+[IVXLCDM]+\s*","",title,flags=re.I)
         continue
     if heading.name not in ("h3","h4"):continue
     if not title or len(title)>85 or title.upper()==title or re.search(r"INDEX|GLOSSARY|CONTENTS",title,re.I):continue
@@ -40,8 +40,8 @@ for heading in soup.find_all(re.compile("^h[2-5]$")):
             break
     if len(parts)<2:continue
     # Most Farmer recipes have ingredient lines in paragraph or table elements.
-    if not any(re.search(r"\\b(cup|cups|tablespoon|teaspoon|pint|quart|pound|egg|flour|butter|milk|sugar|water|salt)\\b",p,re.I) for p in parts):continue
-    if not any(re.search(r"\\b(mix|add|cook|bake|boil|beat|serve|stir|put|heat|wash|cream|cut|sift|strain|place|pour|fry|broil|roast|cover)\\b",p,re.I) for p in parts):continue
+    if not any(re.search(r"\b(cup|cups|tablespoon|teaspoon|pint|quart|pound|egg|flour|butter|milk|sugar|water|salt)\b",p,re.I) for p in parts):continue
+    if not any(re.search(r"\b(mix|add|cook|bake|boil|beat|serve|stir|put|heat|wash|cream|cut|sift|strain|place|pour|fry|broil|roast|cover)\b",p,re.I) for p in parts):continue
     key=re.sub(r"[^a-z0-9]+","-",title.lower()).strip("-")
     if not key or any(r["slug"]==key for r in records):continue
     records.append({"slug":key,"title":title,"chapter":chapter or "Historic Cookery","parts":parts[:24],"source":URL+"#"+urllib.parse.quote(heading.get("id") or (heading.find(id=True).get("id") if heading.find(id=True) else ""))})
@@ -51,7 +51,7 @@ if len(records)<200:raise RuntimeError(f"Extraction yielded only {len(records)} 
 # Use openly licensed Wikimedia Commons search for an illustrative food photograph.
 API="https://commons.wikimedia.org/w/api.php"
 def commons_image(title):
-    q=re.sub(r"\\b(I|II|III|IV|V|VI|No\\.|à la|with|and)\\b"," ",title,flags=re.I)
+    q=re.sub(r"\b(I|II|III|IV|V|VI|No\.|à la|with|and)\b"," ",title,flags=re.I)
     q=re.sub(r"[^a-zA-Z ]"," ",q).strip()
     if len(q)<4:return None
     params={"action":"query","generator":"search","gsrsearch":"filetype:bitmap "+q+" food","gsrnamespace":"6","gsrlimit":"6","prop":"imageinfo","iiprop":"url|extmetadata","iiurlwidth":"800","format":"json"}
@@ -60,7 +60,7 @@ def commons_image(title):
         for page in d.get("query",{}).get("pages",{}).values():
             info=page.get("imageinfo",[{}])[0]
             url=info.get("thumburl") or info.get("url")
-            if not url or not re.search(r"\\.(jpg|jpeg|png)(\\?|$)",url,re.I):continue
+            if not url or not re.search(r"\.(jpg|jpeg|png)(\?|$)",url,re.I):continue
             metadata=info.get("extmetadata",{})
             license_name=metadata.get("LicenseShortName",{}).get("value","")
             if not (license_name.startswith("CC") or license_name in ("Public domain","PD","CC0")):continue
@@ -77,7 +77,7 @@ for i,r in enumerate(records):
         try:
             raw=get(photo["url"])
             if len(raw)>300 and len(raw)<3_000_000:
-                ext=".png" if raw[:8]==b"\\x89PNG\\r\\n\\x1a\\n" else ".jpg"
+                ext=".png" if raw[:8]==b"\x89PNG\r\n\x1a\n" else ".jpg"
                 p=ROOT/"images"/(r["slug"]+ext);p.parent.mkdir(exist_ok=True);p.write_bytes(raw)
                 photo["local"]="images/"+p.name
         except Exception as exc:print("Download failed",r["title"],exc)
