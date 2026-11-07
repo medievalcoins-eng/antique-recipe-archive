@@ -38,6 +38,9 @@ for heading in soup.find_all(re.compile("^h[2-5]$")):
     if not key or any(r["slug"]==key for r in records):continue
     records.append({"slug":key,"title":title,"chapter":chapter or "Historic Cookery","parts":parts[:24],"source":URL+"#"+urllib.parse.quote(heading.get("id") or (heading.find(id=True).get("id") if heading.find(id=True) else ""))})
     if len(records)>=320:break
+if len(records)<200:
+    print("DIAGNOSTIC HEADINGS", [(h.name, h.get_text(" ", strip=True)[:65], [(str(x.name) if isinstance(x,Tag) else "text", (x.get_text(" ",strip=True) if isinstance(x,Tag) else str(x).strip())[:70]) for x in list(h.next_siblings)[:8]]) for h in soup.find_all(re.compile("^h[2-5]$"))[:12]], flush=True)
+    print("DIAGNOSTIC COUNTS", {tag:len(soup.find_all(tag)) for tag in ("h2","h3","h4","p","table")}, flush=True)
 if len(records)<200:raise RuntimeError(f"Extraction yielded only {len(records)} recipes; refusing to publish an incomplete archive")
 # Use openly licensed Wikimedia Commons search for an illustrative food photograph.
 API="https://commons.wikimedia.org/w/api.php"
