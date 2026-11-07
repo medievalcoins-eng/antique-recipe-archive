@@ -28,15 +28,14 @@ jobs:
       - name: Check Cloudflare credentials
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$TOKEN" ] || [ -z "$ACCOUNT" ]; then
-            echo "::error::Cloudflare credentials not configured in GitHub. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository Actions secrets."
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Cloudflare credentials not configured in GitHub. Add CLOUDFLARE_API_TOKEN as a repository Actions secret."
             exit 1
           fi
       - name: Publish Worker static assets
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: bb3c6c55c0dfe8319157a750272d6fa8
           command: deploy
