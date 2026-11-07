@@ -1,0 +1,42 @@
+name: Deploy antique recipe archive to Cloudflare Worker
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'style.css'
+      - 'recipe/**'
+      - 'images/**'
+      - 'recipes-archive.json'
+      - 'wrangler.toml'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare static site
+        run: |
+          mkdir -p public
+          cp index.html style.css public/
+          cp -r recipe images public/
+          test -f public/index.html
+          test "$(find public/recipe -name '*.html' | wc -l)" -ge 200
+      - name: Check Cloudflare credentials
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$ACCOUNT" ]; then
+            echo "::error::Cloudflare credentials not configured in GitHub. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository Actions secrets."
+            exit 1
+          fi
+      - name: Publish Worker static assets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
