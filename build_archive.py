@@ -20,16 +20,24 @@ for heading in soup.find_all(re.compile("^h[2-5]$")):
     if heading.name not in ("h3","h4"):continue
     if not title or len(title)>85 or title.upper()==title or re.search(r"INDEX|GLOSSARY|CONTENTS",title,re.I):continue
     parts=[]
-    for el in heading.next_siblings:
-        if isinstance(el,Tag) and el.name in ("h2","h3","h4","h5"):break
-        if isinstance(el,Tag):
-            if el.name in ("figure","img","table"):continue
+    # Gutenberg wraps recipe ingredient lists and instructions in different nested
+    # containers. Traverse document order, not merely sibling nodes.
+    for el in heading.next_elements:
+        if isinstance(el,Tag) and el.name in ("h2","h3","h4","h5") and el is not heading:
+            break
+        if not isinstance(el,Tag):
+            continue
+        if el.name in ("p","table","ul","ol"):
             txt=el.get_text(" ",strip=True)
-        elif isinstance(el,NavigableString):txt=str(el).strip()
-        else:continue
-        txt=re.sub(r"\\s+"," ",txt).strip()
-        if txt and not re.fullmatch(r"\\d{1,3}",txt) and not txt.startswith("Image"):parts.append(txt)
-        if len(" ".join(parts))>3500:break
+        elif el.name in ("div","li","td") and not el.find(["p","table","ul","ol","div","li","td"]):
+            txt=el.get_text(" ",strip=True)
+        else:
+            continue
+        txt=re.sub(r"\s+"," ",txt).strip()
+        if txt and not re.fullmatch(r"\d{1,3}",txt) and not txt.startswith("Image") and txt not in parts[-2:]:
+            parts.append(txt)
+        if len(" ".join(parts))>3500:
+            break
     if len(parts)<2:continue
     # Most Farmer recipes have ingredient lines in paragraph or table elements.
     if not any(re.search(r"\\b(cup|cups|tablespoon|teaspoon|pint|quart|pound|egg|flour|butter|milk|sugar|water|salt)\\b",p,re.I) for p in parts):continue
@@ -38,9 +46,7 @@ for heading in soup.find_all(re.compile("^h[2-5]$")):
     if not key or any(r["slug"]==key for r in records):continue
     records.append({"slug":key,"title":title,"chapter":chapter or "Historic Cookery","parts":parts[:24],"source":URL+"#"+urllib.parse.quote(heading.get("id") or (heading.find(id=True).get("id") if heading.find(id=True) else ""))})
     if len(records)>=320:break
-if len(records)<200:
-    print("DIAGNOSTIC HEADINGS", [(h.name, h.get_text(" ", strip=True)[:65], [(str(x.name) if isinstance(x,Tag) else "text", (x.get_text(" ",strip=True) if isinstance(x,Tag) else str(x).strip())[:70]) for x in list(h.next_siblings)[:8]]) for h in soup.find_all(re.compile("^h[2-5]$"))[:12]], flush=True)
-    print("DIAGNOSTIC COUNTS", {tag:len(soup.find_all(tag)) for tag in ("h2","h3","h4","p","table")}, flush=True)
+print("Extracted",len(records),"recipes",flush=True)
 if len(records)<200:raise RuntimeError(f"Extraction yielded only {len(records)} recipes; refusing to publish an incomplete archive")
 # Use openly licensed Wikimedia Commons search for an illustrative food photograph.
 API="https://commons.wikimedia.org/w/api.php"
