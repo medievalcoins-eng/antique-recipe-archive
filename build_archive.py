@@ -67,22 +67,53 @@ def commons_image(title):
             return {"url":url,"file":page["title"],"license":license_name,"credit":re.sub("<[^>]+>","",metadata.get("Artist",{}).get("value",""))[:180],"description_url":info.get("descriptionurl","")}
     except Exception as exc:print("Image lookup failed:",title,exc)
     return None
-images={}
-# Prefer original historical illustration from the cookbook if no licensed photograph.
-historic=soup.find("img")
-fallback=urllib.parse.urljoin(URL,historic.get("src","")) if historic else ""
+# Create a distinctive antique-style illustrated plate for every recipe.
+# Photographs already present in the repository are preserved.
+import hashlib, math
+def illustrated_plate(r):
+    title=r["title"]
+    slug=r["slug"]
+    digest=hashlib.sha256(title.encode()).digest()
+    lower=title.lower()
+    if any(k in lower for k in ("coffee","tea","cocoa","chocolate","lemonade","punch","juice","drink")):
+        kind="drink"
+    elif any(k in lower for k in ("soup","broth","bouillon","stew","chowder","porridge")):
+        kind="soup"
+    elif any(k in lower for k in ("bread","roll","muffin","biscuit","toast","waffle","cake","popover","griddle","scone")):
+        kind="baked"
+    elif any(k in lower for k in ("fish","oyster","lobster","veal","beef","chicken","turkey","meat","terrappin")):
+        kind="savory"
+    else:
+        kind="dish"
+    palettes={"drink":("#a17c58","#75492f"),"soup":("#a98c58","#7c6d39"),"baked":("#d7a65e","#9b5b2e"),"savory":("#a97d56","#76543c"),"dish":("#b89158","#806c3e")}
+    base,dark=palettes[kind]
+    # Plate and hand-drawn food forms: these are original modern illustrations,
+    # never falsely represented as period photography.
+    if kind=="drink":
+        food=f'<ellipse cx="480" cy="337" rx="135" ry="34" fill="#76593c" opacity=".17"/><path d="M385 178 L560 178 L545 364 Q474 391 401 364 Z" fill="#f5e9d0" stroke="#755940" stroke-width="9"/><ellipse cx="473" cy="178" rx="88" ry="26" fill="{dark}" stroke="#d9b890" stroke-width="8"/><path d="M557 224 Q638 205 627 270 Q623 325 549 319" fill="none" stroke="#f5e9d0" stroke-width="19"/><path d="M557 224 Q638 205 627 270 Q623 325 549 319" fill="none" stroke="#755940" stroke-width="5"/>'
+    else:
+        food=f'<ellipse cx="480" cy="300" rx="260" ry="173" fill="#b99b73" opacity=".28"/><ellipse cx="480" cy="278" rx="247" ry="160" fill="#eee0c4" stroke="#947657" stroke-width="9"/><ellipse cx="480" cy="278" rx="218" ry="135" fill="#e5d1aa" stroke="#b39770" stroke-width="3"/>'
+        if kind=="soup":
+            food+=f'<ellipse cx="480" cy="280" rx="182" ry="102" fill="{dark}"/><ellipse cx="480" cy="274" rx="178" ry="94" fill="{base}"/>'
+            food+=''.join(f'<ellipse cx="{335+(digest[i]*3)%280}" cy="{220+(digest[i+1]*2)%105}" rx="{8+digest[i]%12}" ry="7" fill="{["#d8b36d","#6f8048","#e5c58a"][i%3]}" opacity=".85"/>' for i in range(0,14,2))
+        elif kind=="baked":
+            food+=''.join(f'<ellipse cx="{350+i*58}" cy="{280+(i%2)*12}" rx="58" ry="46" fill="{base}" stroke="{dark}" stroke-width="7"/><path d="M{310+i*58} {275+(i%2)*12} q45 -30 85 5" fill="none" stroke="#efd39a" stroke-width="6"/>' for i in range(5))
+        else:
+            food+=''.join(f'<ellipse cx="{350+(i%3)*110}" cy="{220+(i//3)*80}" rx="{40+digest[i]%20}" ry="{24+digest[i+1]%14}" fill="{base if i%2 else dark}" stroke="#dfc393" stroke-width="4"/>' for i in range(6))
+    svg=f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Modern illustrated serving of {html.escape(title,quote=True)}"><defs><radialGradient id="paper"><stop stop-color="#f3e3c5"/><stop offset="1" stop-color="#d2b88e"/></radialGradient><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="{digest[0]%10}" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".07"/></feComponentTransfer><feBlend in="SourceGraphic" mode="multiply"/></filter></defs><rect width="960" height="540" fill="url(#paper)"/><g opacity=".32" fill="none" stroke="#866c4d" stroke-width="3"><path d="M34 30 H926 V510 H34 Z"/><path d="M48 44 H912 V496 H48 Z"/></g><g filter="url(#grain)">{food}</g><g fill="#746345" opacity=".55"><path d="M115 400 q65 -110 135 -50 q-70 -15 -135 50"/><path d="M850 130 q-70 110 -135 40 q70 15 135 -40"/></g></svg>"""
+    path=ROOT/"images"/(slug+".svg")
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(svg,encoding="utf-8")
+    return {"local":"images/"+path.name,"license":"Original modern illustration","credit":"The Antique Recipe Archive"}
 for i,r in enumerate(records):
-    photo=commons_image(r["title"])
-    if photo:
-        try:
-            raw=get(photo["url"])
-            if len(raw)>300 and len(raw)<3_000_000:
-                ext=".png" if raw[:8]==b"\x89PNG\r\n\x1a\n" else ".jpg"
-                p=ROOT/"images"/(r["slug"]+ext);p.parent.mkdir(exist_ok=True);p.write_bytes(raw)
-                photo["local"]="images/"+p.name
-        except Exception as exc:print("Download failed",r["title"],exc)
-    r["image"]=photo or {"url":fallback,"license":"Historical book illustration (not dish-specific)","credit":"Fannie Merritt Farmer, 1910"}
-    if i%30==0:print("Images:",i,"/",len(records),flush=True)
+    photo=None
+    for ext in (".jpg",".png",".jpeg"):
+        path=ROOT/"images"/(r["slug"]+ext)
+        if path.exists():
+            photo={"local":"images/"+path.name,"license":"Previously archived licensed photograph","credit":"See image record"}
+            break
+    r["image"]=photo or illustrated_plate(r)
+    if i%80==0:print("Illustrated:",i,"/",len(records),flush=True)
 (ROOT/"recipes-archive.json").write_text(json.dumps(records,ensure_ascii=False,indent=2),encoding="utf-8")
 def esc(s):return html.escape(str(s),quote=True)
 style="""@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica&display=swap');*{box-sizing:border-box}body{background:#e0d0ad;color:#362b20;margin:0;font:19px/1.5 'IM Fell DW Pica',Georgia,serif}header{background:#642b34;color:#f5e5c7;text-align:center;padding:22px}header a{color:inherit;text-decoration:none;font:30px 'IM Fell English',Georgia,serif}main{max-width:970px;margin:26px auto;padding:35px 55px;background:#f2e5c9;border:5px double #a88664;box-shadow:0 8px 30px #563e2225}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;text-align:center;color:#75413c}h1{font:italic 60px 'IM Fell English',Georgia,serif;text-align:center;color:#743e36;margin:10px 0}h2{font:italic 32px 'IM Fell English',serif;color:#743e36;border-bottom:1px solid #bca580}.sub{text-align:center;font-style:italic}.flourish{text-align:center;color:#9a7858;margin:15px}.columns{display:grid;grid-template-columns:1fr 1fr;gap:30px}.photo{border:1px solid #b39a75;padding:8px;margin:0}.photo img{width:100%;height:300px;object-fit:cover}.photo figcaption{font-size:12px;color:#695a48}.recipe-text p{margin:0 0 12px}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:17px}.card{background:#f8edd7;border:1px solid #bca580;color:inherit;text-decoration:none}.card img{width:100%;height:155px;object-fit:cover}.card div{padding:12px}.card strong{font:italic 25px 'IM Fell English',serif;color:#743e36}.card small{display:block;color:#75604c}.search{width:100%;padding:12px;font:18px Georgia,serif;background:#fff8e8;border:1px solid #bca580}.source{border-top:3px double #bca580;padding-top:15px;margin-top:30px;font-size:15px}a{color:#743e36}footer{text-align:center;padding:20px;font-size:14px}@media(max-width:650px){main{padding:20px;margin:0;border-left:0;border-right:0}.columns{grid-template-columns:1fr}h1{font-size:42px}}"""
@@ -90,13 +121,13 @@ style="""@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:i
 cards=[]
 for r in records:
     img=r["image"];src=img.get("local") or img.get("url") or fallback
-    credit="Illustrative photograph; not an original period image" if img.get("local") else "Historical illustration; not necessarily of this dish"
+    credit="Original modern illustration, not a historical photograph" if img.get("license")=="Original modern illustration" else "Illustrative photograph; not a historical photograph"
     if img.get("description_url"):credit+=' · Wikimedia Commons: '+img.get("license","")
     body="".join("<p>"+esc(p)+"</p>" for p in r["parts"])
     page=f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(r['title'])} · Antique Recipe Archive</title><link rel="stylesheet" href="../style.css"></head><body><header><a href="../index.html">The Antique Recipe Archive</a></header><main><a href="../index.html">← All recipes</a><p class="eyebrow">1910 · Fannie Merritt Farmer · {esc(r['chapter'])}</p><h1>{esc(r['title'])}</h1><p class="sub">The Boston Cooking-School Cook Book</p><div class="flourish">❧ ───── ❦ ───── ❧</div><div class="columns"><section><figure class="photo"><img src="{esc("../"+src if not src.startswith("http") else src)}" alt="Illustration associated with {esc(r['title'])}" onerror="this.style.display='none'"><figcaption>{esc(credit)} {('<a href="'+esc(img['description_url'])+'">Image attribution</a>') if img.get('description_url') else ''}</figcaption></figure><h2>Historical Recipe</h2><p>The following text is extracted from the 1910 edition, retaining historical terminology and quantities.</p></section><section class="recipe-text"><h2>Original Ingredients & Directions</h2>{body}</section></div><section class="source"><strong>Original source:</strong> Fannie Merritt Farmer, <em>The Boston Cooking-School Cook Book</em> (1910). <a href="{esc(URL)}">Read the digitized original</a>.<p>Automatically extracted transcription; editorial verification pending. Historical instructions may not meet modern food-safety standards.</p></section></main><footer>Preserving culinary history, one recipe at a time.</footer></body></html>"""
     folder=ROOT/"recipe";folder.mkdir(exist_ok=True)
     (folder/(r["slug"]+".html")).write_text(page,encoding="utf-8")
     cards.append(f'<a class="card" href="recipe/{esc(r["slug"])}.html"><img loading="lazy" src="{esc(src)}" alt="{esc(r["title"])}"><div><small>{esc(r["chapter"])} · 1910</small><strong>{esc(r["title"])}</strong></div></a>')
-index=f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antique Recipe Archive · {len(records)} Original Recipes</title><link rel="stylesheet" href="style.css"></head><body><header><a href="index.html">The Antique Recipe Archive</a></header><main><p class="eyebrow">Fannie Merritt Farmer · 1910</p><h1>Recipes from Another Time</h1><p class="sub">{len(records)} original recipes drawn from a historic cookbook</p><div class="flourish">❧ ───── ❦ ───── ❧</div><p>Explore original recipes from the 1910 edition of <em>The Boston Cooking-School Cook Book</em>. Each recipe includes its source, original instructions, and an illustrative image. Automated transcriptions are awaiting editorial review.</p><input class="search" id="search" placeholder="Search historical recipes..." aria-label="Search recipes"><p id="count">{len(records)} recipes</p><div class="cards" id="cards">{''.join(cards)}</div></main><footer>Original source: <a href="{esc(URL)}">Project Gutenberg edition of Farmer's 1910 cookbook</a>. Illustrative images are not historical photographs.</footer><script>const s=document.getElementById('search'),cards=[...document.querySelectorAll('.card')],count=document.getElementById('count');s.addEventListener('input',()=>{{const q=s.value.toLowerCase();let n=0;for(const c of cards){{const ok=c.textContent.toLowerCase().includes(q);c.hidden=!ok;if(ok)n++}}count.textContent=n+' recipes'}})</script></body></html>"""
+index=f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antique Recipe Archive · {len(records)} Original Recipes</title><link rel="stylesheet" href="style.css"></head><body><header><a href="index.html">The Antique Recipe Archive</a></header><main><p class="eyebrow">Fannie Merritt Farmer · 1910</p><h1>Recipes from Another Time</h1><p class="sub">{len(records)} original recipes drawn from a historic cookbook</p><div class="flourish">❧ ───── ❦ ───── ❧</div><p>Explore original recipes from the 1910 edition of <em>The Boston Cooking-School Cook Book</em>. Each recipe includes its source, original instructions, and an illustrative image. Automated transcriptions are awaiting editorial review.</p><input class="search" id="search" placeholder="Search historical recipes..." aria-label="Search recipes"><p id="count">{len(records)} recipes</p><div class="cards" id="cards">{''.join(cards)}</div></main><footer>Original source: <a href="{esc(URL)}">Project Gutenberg edition of Farmer's 1910 cookbook</a>. Illustrations are modern interpretations, not historical photographs.</footer><script>const s=document.getElementById('search'),cards=[...document.querySelectorAll('.card')],count=document.getElementById('count');s.addEventListener('input',()=>{{const q=s.value.toLowerCase();let n=0;for(const c of cards){{const ok=c.textContent.toLowerCase().includes(q);c.hidden=!ok;if(ok)n++}}count.textContent=n+' recipes'}})</script></body></html>"""
 (ROOT/"index.html").write_text(index,encoding="utf-8")
 print("Built",len(records),"authentic historical recipe pages",flush=True)
