@@ -76,29 +76,62 @@
     "book": "Mrs. Beeton's Book of Household Management",
     "author": "Isabella Beeton",
     "source": "https://www.gutenberg.org/ebooks/10136",
-    "description": "Historical cookbook entry identified for further transcription and verification.",
-    "ingredients": [],
-    "method": [],
-    "note": "Original recipe transcription and verification pending."
+    "description": "A substantial Victorian fruit-and-rice cake with raisins, currants, almonds and nutmeg.",
+    "ingredients": [
+      "½ lb flour",
+      "½ lb ground rice",
+      "½ lb raisins, stoned and chopped",
+      "¼ lb currants",
+      "¼ lb butter",
+      "2 oz sweet almonds",
+      "¼ lb sifted loaf sugar",
+      "½ grated nutmeg",
+      "1 pint milk",
+      "1 teaspoon carbonate of soda"
+    ],
+    "method": [
+      "Stone and chop the raisins; wash and dry the currants.",
+      "Cream the butter without letting it become oily; blanch and chop the almonds and grate the nutmeg.",
+      "Mix the prepared ingredients thoroughly.",
+      "Warm the milk and stir in the carbonate of soda; use it to combine the ingredients into a paste.",
+      "Butter a cake mould and fill it a little more than halfway; bake in a moderate oven for 1½–2 hours (less if divided into two cakes)."
+    ],
+    "note": "Paraphrased from Mrs. Beeton's 1861 recipe no. 1771. Historical measurements and oven descriptions retained; not kitchen-tested.",
+    "reference": "Mrs. Beeton, recipe 1771, A Pavini Cake."
   },
   {
     "id": "recipe-4",
-    "title": "Victorian Tea Cakes",
+    "title": "Tea-Cakes",
     "year": 1861,
     "country": "England",
     "category": "Breads",
     "book": "Mrs. Beeton's Book of Household Management",
     "author": "Isabella Beeton",
     "source": "https://www.gutenberg.org/ebooks/10136",
-    "description": "Victorian-era tea cakes, traditionally served with tea. Exact source recipe awaiting verification.",
-    "ingredients": [],
-    "method": [],
-    "note": "This entry is an illustrated research placeholder, not yet a transcribed or kitchen-tested recipe.",
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Russian_tea_cakes.jpg",
+    "description": "Soft, yeast-raised Victorian tea-cakes, served warm with butter; Mrs. Beeton notes optional currants and sugar.",
+    "ingredients": [
+      "2 lb flour",
+      "½ teaspoon salt",
+      "¼ lb butter or lard",
+      "1 egg",
+      "A walnut-sized piece of German yeast",
+      "Warm milk, as needed",
+      "Optional: a few currants and sugar"
+    ],
+    "method": [
+      "Mix the dry flour with salt and rub in the butter or lard.",
+      "Beat the egg with the yeast; add to the flour with enough warm milk to form a smooth dough.",
+      "Knead well and leave in a warm place to rise.",
+      "Shape into eight tea-cakes; place on tins and allow to rise briefly again.",
+      "Bake in a moderate oven for 15–30 minutes; serve hot with butter."
+    ],
+    "note": "Paraphrased from Mrs. Beeton's 1861 recipe no. 1786. German yeast is a historical ingredient; no modern conversion is asserted. The previous Russian tea cakes illustration is not an accurate representation.",
+    "image": "",
     "imageAlt": "Small tea cakes; illustrative only, not the exact Victorian recipe",
     "imageCredit": "Wikimedia Commons contributors",
     "imageSource": "https://commons.wikimedia.org/wiki/File:Russian_tea_cakes.jpg",
-    "imageNote": "Modern illustrative photograph, not a photograph of the original historical preparation."
+    "imageNote": "Period-style illustration pending.",
+    "reference": "Mrs. Beeton, recipe 1786, Tea-Cakes."
   },
   {
     "id": "recipe-5",
@@ -148,8 +181,14 @@
       "¼ teaspoon salt",
       "1 teaspoon melted butter"
     ],
-    "method": [],
-    "note": "The source's ingredient listing has been located, but its full method and remaining ingredient line still require verification. Do not attempt to cook from this partial transcription.",
+    "method": [
+      "Mix the flour and salt.",
+      "Add the milk gradually to make a smooth batter.",
+      "Beat in the eggs until light, followed by the melted butter.",
+      "Beat the batter for two minutes; pour into very hot, buttered iron gem pans.",
+      "Bake in a hot oven for 30–35 minutes."
+    ],
+    "note": "The source's ingredient listing has been located, but its full method and remaining ingredient line still require verification. Do not attempt to cook from this partial transcription. Directions paraphrased from Fannie Merritt Farmer's Boston Cooking-School Cook Book; confirm ingredient quantities against the linked edition.",
     "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Popover_(14506323110).jpg",
     "imageAlt": "Freshly baked popover; illustrative",
     "imageCredit": "Karen and Brad Emerson, CC BY 2.0",
@@ -159,16 +198,29 @@
   },
   {
     "id": "recipe-7",
-    "title": "Spider Corn Cake",
+    "title": "Susie's Spider Corn Cake",
     "year": 1910,
     "country": "United States",
     "category": "Breads",
     "book": "The Boston Cooking-School Cook Book",
     "author": "Fannie Merritt Farmer",
     "source": "https://www.gutenberg.org/files/65061/65061-h/65061-h.htm",
-    "description": "Historical cookbook entry identified for further transcription and verification.",
-    "ingredients": [],
-    "method": [],
-    "note": "Original recipe transcription and verification pending."
+    "description": "An early American skillet-baked corn cake, made with sour milk and baked in a hot oven.",
+    "ingredients": [
+      "1¼ cups corn meal",
+      "2 cups sour milk",
+      "1 teaspoon soda",
+      "1 teaspoon salt",
+      "2 eggs",
+      "2 tablespoons butter"
+    ],
+    "method": [
+      "Mix the soda, salt and corn meal.",
+      "Gradually add well-beaten eggs and sour milk.",
+      "Heat a frying pan and grease its bottom and sides with butter.",
+      "Pour in the mixture and bake on the middle rack of a hot oven for 20 minutes."
+    ],
+    "note": "Paraphrased from the digitized Boston Cooking-School Cook Book. The linked edition should be checked for its exact publication year; no modern oven temperature is inferred.",
+    "reference": "Susie's Spider Corn Cake, corn cake section."
   }
 ]
